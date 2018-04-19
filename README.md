@@ -76,6 +76,7 @@ curl http://localhost:8800
 </details>
 
 &nbsp;
+
 2. Write a Dockerfile.
 
 <details>
