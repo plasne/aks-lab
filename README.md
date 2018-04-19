@@ -96,6 +96,7 @@ CMD node server.js
 </details>
 
 &nbsp;
+
 3. Build the container image.
 
 <details>
@@ -119,6 +120,7 @@ curl http://localhost:8800
 </details>
 
 &nbsp;
+
 4. Push the container to ACR.
 
 <details>
@@ -135,6 +137,7 @@ az acr repository list --name whatever --output table
 </details>
 
 &nbsp;
+
 Ref:
 * https://expressjs.com/en/starter/hello-world.html
 * https://docs.docker.com/engine/reference/builder
