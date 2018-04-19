@@ -38,9 +38,11 @@ Perform the following steps to deploy a simple "Hello World" application:
 Ref:
 * https://expressjs.com/en/starter/hello-world.html
 
->! bash
->! const express = require("express");
->! ```
+<details>
+```bash
+const express = require("express");
+```
+</details>
 
 ## Expose the container
 
