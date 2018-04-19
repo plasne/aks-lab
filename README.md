@@ -45,11 +45,32 @@ Perform the following steps to deploy a simple "Hello World" application:
 <details>
   <summary>Node.js Hello World Code Sample</summary>
 
-You can provision a new app and install Express by:
+If you have Node installed, you can provision a new app and install Express:
 
 ```bash
 npm init
 npm install express --save
+```
+
+Alternatively, you can simply create the package.json file manually:
+
+```bash
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
 ```
 
 The server.js file could look something like this:
@@ -124,7 +145,7 @@ curl http://localhost:8800
 4. Push the container to ACR.
 
 <details>
-  <p>
+  <summary>Push Commands</summary>
 
 ```bash
 az acr login --name whatever.azurecr.io
@@ -133,7 +154,6 @@ docker push whatever.azure.io/hello:latest whatever.azure.io/hello:1.0.0
 az acr repository list --name whatever --output table
 ```
 
-  </p>
 </details>
 
 &nbsp;
