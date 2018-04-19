@@ -3,6 +3,8 @@ A short lab for getting an application up and running using Azure Container Serv
 
 ## Provision a Kubernetes Cluster
 
+## Provision an Azure Container Registry
+
 ## Deploy a web front end
 
 ## Expose the container
