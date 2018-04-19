@@ -42,7 +42,6 @@ Perform the following steps to deploy a simple "Hello World" application:
 
 <details>
   <summary>Node.js Hello World Code Sample</summary>
-  <p>
 
 You can provision a new app and install Express by:
 
@@ -73,10 +72,8 @@ You could test locally by:
 node server.js
 curl http://localhost:8800
 ```
-  </p>
+
 </details>
-
-
 
 2. Write a Dockerfile.
 
