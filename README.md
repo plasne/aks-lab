@@ -77,6 +77,7 @@ curl http://localhost:8800
   </p>
 </details>
 
+
 2. Write a Dockerfile.
 
 <details>
@@ -94,6 +95,7 @@ CMD node server.js
     
   </p>
 </details>
+
 
 3. Build the container image.
 
@@ -116,6 +118,7 @@ curl http://localhost:8800
 
   </p>
 </details>
+
 
 4. Push the container to ACR.
 
