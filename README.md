@@ -1,6 +1,8 @@
 # AKS Lab
 A short lab for getting an application up and running using Azure Container Service (AKS).
 
+The specific code and commands are collapsed. The intent of this lab is for you to use the "Ref" section to figure out how to do the steps. You can use the collapsed segments AFTER you review the documentation if you get stuck or to verify you did it correctly.
+
 It is not required to have any of these tools installed, but you could install them if you want to run some of this locally:
 * Azure CLI 2.0: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 * Node.js: https://nodejs.org/en/
@@ -80,7 +82,7 @@ curl http://localhost:8800
 2. Write a Dockerfile.
 
 <details>
-  <p>
+  <summary>Dockerfile Sample</summary>
     
 ```Dockerfile
 FROM node:latest
@@ -92,7 +94,6 @@ EXPOSE 80
 CMD node server.js
 ```
     
-  </p>
 </details>
 
 &nbsp;
@@ -100,7 +101,7 @@ CMD node server.js
 3. Build the container image.
 
 <details>
-  <p>
+  <summary>Build Commands</summary>
 
 You can build and view the built images by:
 
@@ -116,7 +117,6 @@ docker run --name hello --publish 8800:80 hello:lastest
 curl http://localhost:8800
 ```
 
-  </p>
 </details>
 
 &nbsp;
