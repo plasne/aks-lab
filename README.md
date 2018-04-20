@@ -3,6 +3,11 @@ A short lab for getting an application up and running using Azure Container Serv
 
 The specific code and commands are collapsed. The intent of this lab is for you to use the "Ref" section to figure out how to do the steps. You can use the collapsed segments AFTER you review the documentation if you get stuck or to verify you did it correctly.
 
+If you do not want to install these tools locally, you could also install them on a Linux or Windows VM in Azure.
+
+You will need to install Docker Community Edition:
+* https://docs.docker.com/install
+
 It is not required to have any of these tools installed, but you could install them if you want to run some of this locally:
 * Azure CLI 2.0: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 * Node.js: https://nodejs.org/en/
