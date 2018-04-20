@@ -269,6 +269,7 @@ kubectl get pods --show-labels
 ## Expose the container to the internet
 
 Ref:
+* https://kubernetes.io/docs/concepts/services-networking/service
 * https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
 * https://github.com/Azure-Samples/azure-voting-app-redis/blob/master/azure-vote-all-in-one-redis.yaml
 
