@@ -6,9 +6,9 @@ The specific code and commands are collapsed. The intent of this lab is for you 
 It is not required to have any of these tools installed, but you could install them if you want to run some of this locally:
 * Azure CLI 2.0: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 * Node.js: https://nodejs.org/en/
-* 
+* kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
-While it is not required, it is probably easier to debug your code locally before pushing it out in a container to Kubernetes. You can install Node.js here: https://nodejs.org/en/. 
+Azure CLI 2.0 and kubectl are already installed in Cloud Shell (https://azure.microsoft.com/en-us/features/cloud-shell/) so you could use that.
 
 ## Provision a Kubernetes Cluster
 
@@ -36,11 +36,14 @@ Ref:
 * https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-azure-cli
 * https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-powershell
 
-## Deploy a web front end
+## Deploy a web front end application
 
 Perform the following steps to deploy a simple "Hello World" application:
 
 1. Write a Hello World Node.js application that will expose an HTTP endpoint on port 80.
+
+Ref:
+* https://expressjs.com/en/starter/hello-world.html
 
 <details>
   <summary>Node.js Hello World Code Sample</summary>
@@ -80,7 +83,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send.("Hello World!\n");
+  res.send("Hello World!\n");
 });
 
 const port = process.env.PORT || 8800;
@@ -102,6 +105,10 @@ curl http://localhost:8800
 
 2. Write a Dockerfile.
 
+Ref:
+* https://docs.docker.com/engine/reference/builder
+* https://hub.docker.com/_/node
+
 <details>
   <summary>Dockerfile Sample</summary>
     
@@ -121,6 +128,10 @@ CMD node server.js
 
 3. Build the container image.
 
+Ref:
+* https://docs.docker.com/engine/reference/commandline/build
+* https://docs.docker.com/engine/reference/run
+
 <details>
   <summary>Build Commands</summary>
 
@@ -134,7 +145,7 @@ docker images
 You can test locally by:
 
 ```bash
-docker run --name hello --publish 8800:80 hello:lastest
+docker run -d --name hello --publish 8800:80 hello:latest
 curl http://localhost:8800
 ```
 
@@ -144,29 +155,134 @@ curl http://localhost:8800
 
 4. Push the container to ACR.
 
+Ref:
+* https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-acr
+* https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster#configure-acr-authentication
+
 <details>
   <summary>Push Commands</summary>
 
 ```bash
-az acr login --name whatever.azurecr.io
-docker tag hello whatever.azure.io/hello:latest whatever.azure.io/hello:1.0.0
-docker push whatever.azure.io/hello:latest whatever.azure.io/hello:1.0.0
+az login
+az acr login --name whatever
+docker tag hello:1.0.0 whatever.azurecr.io/hello:1.0.0
+docker tag hello:1.0.0 whatever.azurecr.io/hello:latest
+docker images
+docker push whatever.azurecr.io/hello:latest
+docker push whatever.azurecr.io/hello:1.0.0
 az acr repository list --name whatever --output table
+az acr repository show-tags --name whatever --repository hello --output table
+```
+
+Alternatively, you can login to your ACR like this:
+
+```bash
+docker login whatever.azurecr.io -u whatever -p password
 ```
 
 </details>
 
 &nbsp;
 
-Ref:
-* https://expressjs.com/en/starter/hello-world.html
-* https://docs.docker.com/engine/reference/builder
-* https://hub.docker.com/_/node
-* https://docs.docker.com/engine/reference/commandline/build
-* https://docs.docker.com/engine/reference/run
-* https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-acr
+5. Build a YAML file for the deployment.
 
-## Expose the container
+Ref:
+* https://v1-8.docs.kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+
+<details>
+  <summary>Deployment YAML File Sample</summary>
+
+The following is an example deployment hello.yaml file:
+
+```yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - name: hello
+        image: pelasneacr.azurecr.io/hello:1.0.0
+        ports:
+        - containerPort: 80
+```
+
+</details>
+
+&nbsp;
+
+6. Deploy as a single container (1 replica) to Kubernetes.
+
+Ref:
+* https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster
+* https://v1-8.docs.kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+
+<details>
+  <summary>Deployment Commands</summary>
+
+```bash
+# login to Kubernetes
+az aks get-credentials --resource-group whatever-rg --name whatever
+kubectl get nodes
+
+# grant the Kubernetes service principal access to ACR
+CLIENT_ID=$(az aks show --resource-group pelasne-aks --name pelasne-aks --query "servicePrincipalProfile.clientId" --output tsv)
+ACR_ID=$(az acr show --resource-group pelasne-acr --name pelasneacr --query "id" --output tsv)
+az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+
+# create the deployment
+kubectl create -f hello.yaml
+kubectl get deployments
+kubectl rollout status deployment/hello
+kubectl get rs
+kubectl get pods --show-labels
+```
+  
+</details>
+
+&nbsp;
+
+## Expose the container to the internet
+
+<details>
+  <summary>Deploy Commands</summary>
+  
+The following is an example hello-expose.yaml file:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: hello
+```
+
+Then you can run the following commands:
+
+```bash
+kubectl create -f hello-expose.yaml
+kubectl get service hello --watch
+```
+
+Once you have an external IP it is done. You can then curl or open a browser to that IP and see your response.
+
+</details>
 
 ## Add a Postgres database
 
