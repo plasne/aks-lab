@@ -1,7 +1,14 @@
 # Develop an API
 
-Many applications will require a REST API. The purpose 
+In section 01, we developed a couple of Entity Services that allow us to do data operations on "songs" and "contracts". However, often we will not expose entity services directly, but rather put them behind an API. The API will be exposed outside of our AKS environment, but the individual entity services will not be.
 
+There are a number of reasons why you might use an API service instead of exposing every service in your environment, including...
+
+- This gives you a single place to do common tasks like authentication, authorization, rate limiting, etc. It is generally also possible to use an API management gateway to do these tasks.
+
+- An API can be a view of your application taylored to a specific consumer or role, for example, you might have an API for your mobile and web applications, a different API for bulk operations, and a different API for administrators. You could change operations, protocols, models, etc. as needed to best optimize for the intended audience.
+
+- Individual entity and process
 
 ```yml
 swagger: '2.0'
