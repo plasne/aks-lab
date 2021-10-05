@@ -10,7 +10,7 @@ In a microservices architecture it is desirable to have a service for each entit
 
 ## Song
 
-You will develop a Song Entity Service that will allow you to store and retrieve songs by ID. It should adhere to the following contract...
+You will develop a Song Entity Service that will allow you to store (in-memory) and retrieve songs by ID. It should adhere to the following contract...
 
 ```yml
 swagger: '2.0'

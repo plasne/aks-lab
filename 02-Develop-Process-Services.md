@@ -4,4 +4,8 @@ In section 01, we developed some entity services. Those services allow us to do 
 
 For this lab, we will not have any process services, but I have included it here for completeness. Some examples of the process services we might build include:
 
-- A scheduled job to ensure all
+- A recommendation service that provides users with artists they may like based on following artists.
+
+- A scheduled job to import songs as artists record new material.
+
+- A scheduled job to ensure all data in the system is valid (no duplicates, all records have required information, etc.).

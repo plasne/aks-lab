@@ -1,14 +1,25 @@
 # Develop an API
 
-In section 01, we developed a couple of Entity Services that allow us to do data operations on "songs" and "contracts". However, often we will not expose entity services directly, but rather put them behind an API. The API will be exposed outside of our AKS environment, but the individual entity services will not be.
+In the other sections, we developed entity services that allow us to do data operations on "songs" and "contracts". We may have also developed process services that allow us to add business value on top of our data. However, often we will not expose these services directly, but rather put them behind an API. The API will be exposed outside of our AKS environment, but the individual entity and process services will not be.
 
 There are a number of reasons why you might use an API service instead of exposing every service in your environment, including...
 
-- This gives you a single place to do common tasks like authentication, authorization, rate limiting, etc. It is generally also possible to use an API management gateway to do these tasks.
+- This gives you a single place to do common tasks like authentication, authorization, licensing, rate limiting, etc. It is generally also possible to use an API management gateway to do these tasks.
 
 - An API can be a view of your application taylored to a specific consumer or role, for example, you might have an API for your mobile and web applications, a different API for bulk operations, and a different API for administrators. You could change operations, protocols, models, etc. as needed to best optimize for the intended audience.
 
-- Individual entity and process
+- Often the useful activity that your API provides will involve contacting multiple services and mashing-up those results.
+
+- Using a small number of API services in front of your entity and process services can improve security in the following ways...
+  - You are presenting a smaller attack surface.
+  - You are reducing unintended change - most of your code updates will happen in entity and process services.
+  - The developers working on entity and process services don't need as much security insight (authentication, licensing, etc.).
+
+- As mentioned previously, this design also allows for an easy separation of concerns. An API developer doesn't have to know anything about how or where data is stored, or anything about how computations are done, he/she simply needs to understand the services available to them and their contracts.
+
+## API
+
+You will develop an API that will allow you to store (in-memory) and retrieve songs and payment information by ID. It should adhere to the following contract...
 
 ```yml
 swagger: '2.0'
@@ -102,3 +113,9 @@ definitions:
       genre:
         type: string
 ```
+
+The GET method will return information about the song as well as how the artist is paid for streaming that song.
+
+## Tips
+
+- When running locally, you will probably want the services running on different ports. When running in production, you will probably want the services all running on port 80. Environment Variables are a good way to do this.
