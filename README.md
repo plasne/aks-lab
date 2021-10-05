@@ -12,6 +12,7 @@ It is not required to have any of these tools installed, but you could install t
 * Azure CLI 2.0: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 * Node.js: https://nodejs.org/en/
 * kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl/
+* istioctl: https://istio.io/latest/docs/setup/getting-started/#download - Istio configuration command line utility
 
 Azure CLI 2.0 and kubectl are already installed in Cloud Shell (https://azure.microsoft.com/en-us/features/cloud-shell/) so you could use that.
 
@@ -22,6 +23,7 @@ Azure CLI 2.0 and kubectl are already installed in Cloud Shell (https://azure.mi
 Provision an "Azure Container Service (AKS)" cluster in Azure using the default parameters:
 * Node count: 3
 * Node virtual machine size: 3x Standard D2 v2
+Install istio on your cluster.
 
 While the resource provisions, you may move on to provisioning the Azure Container Registry.
 
@@ -31,6 +33,73 @@ Ref:
 * https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys
 * https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ssh-from-windows
 * https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-service-principal
+* https://istio.io/latest/docs/
+
+<details>
+  <summary>Provision AKS and ACR</summary>
+
+Download istioctl
+
+* MacOS or Linux:
+
+  ```bash
+  # This will download version 1.11.3
+  curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.11.3 sh -
+
+  # Navigate to the istio package directory
+  cd istio-1.11.3
+
+  # Add the istioctl client to your path
+  export PATH=$PWD/bin:$PATH
+  ```
+
+* Windows:
+
+  Download [version 1.11.3](https://github.com/istio/istio/releases/tag/1.11.3) and add  _`<your_path_to_istio_directory>/istio-1.11.3/bin`_ to your Path
+
+Provision resources
+
+```bash
+# Set up the following variables (configure as needed)
+SUBSCRIPTION=<your subscription Id or name>
+REGION_NAME=eastus
+RESOURCE_GROUP=akslabhv-rg
+ACR_NAME=akslabhv
+CLUSTER_NAME=akslabhv
+ISTIO_VERSION=1.11.3
+NODE_COUNT=3
+NODE_VM_SIZE=Standard_DS2_v2
+
+# Login to Azure
+az login
+
+# Set your default subscription
+az account set -s $SUBSCRIPTION
+
+# Confirm it is set correctly
+az account show
+
+# Create resource group
+az group create --name $RESOURCE_GROUP --location $REGION_NAME 
+
+# Create Azure container registry
+az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Standard
+
+# Create cluster
+az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-count $NODE_COUNT \
+    --node-vm-size $NODE_VM_SIZE --generate-ssh-keys --attach-acr $ACR_NAME
+
+# Get aks credentials to use kubectl
+az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
+
+# Install istio to your cluster
+istioctl install --set profile=minimal -y
+
+# Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later
+kubectl label namespace default istio-injection=enabled
+```
+
+</details>
 
 &nbsp;
 
