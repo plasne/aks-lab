@@ -8,9 +8,9 @@ In a microservices architecture it is desirable to have a service for each entit
 
 - Compartmentalizing the implementation details of an entity's storage to this service allows for an easy separation of concern. For instance, developers that need to use the entity don't need to know anything about how the data is stored or retrieved; they can simply operate on the public contract of this service.
 
-## Song
+## Songs
 
-You will develop a Song Entity Service that will allow you to store (in-memory) and retrieve songs by ID. It should adhere to the following contract...
+You will develop a Songs Entity Service that will allow you to store (in-memory) and retrieve songs by ID. It should adhere to the following contract...
 
 ```yml
 swagger: '2.0'
