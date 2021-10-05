@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type song struct {
@@ -24,9 +26,12 @@ type contract struct {
 	Payment float64 `json:"payment"`
 }
 
+var songsBaseUrl string = "http://songs"
+var contractsBaseUrl string = "http://contracts"
+
 func retrieveSong(w http.ResponseWriter, r *http.Request) {
 	// call "song" entity service
-	songUrl := fmt.Sprint("http://localhost:9000/?id=", r.URL.Query().Get("id"))
+	songUrl := fmt.Sprint(songsBaseUrl, "/?id=", r.URL.Query().Get("id"))
 	log.Printf("fetching song from entity service (%v)...\n", songUrl)
 	songResp, err := http.Get(songUrl)
 	if err != nil {
@@ -46,7 +51,7 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 	log.Println("successfully retrieved song.")
 
 	// call "contracts" entity service
-	contractUrl := fmt.Sprint("http://localhost:9200/?artist=", url.QueryEscape(song.Artist))
+	contractUrl := fmt.Sprint(contractsBaseUrl, "/?artist=", url.QueryEscape(song.Artist))
 	log.Printf("fetching contract from entity service (%v)...\n", contractUrl)
 	contractResp, err := http.Get(contractUrl)
 	if err != nil {
@@ -85,7 +90,7 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 func storeSong(w http.ResponseWriter, r *http.Request) {
 	// call "song" entity service
 	log.Println("federating store-song request to entity service...")
-	resp, err := http.Post("http://localhost:9000", "application/json", r.Body)
+	resp, err := http.Post(songsBaseUrl, "application/json", r.Body)
 	if err != nil {
 		http.Error(w, "failed to contact song service.", http.StatusInternalServerError)
 		return
@@ -106,6 +111,20 @@ func storeSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// load variables
+	godotenv.Load()
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		port = 9000
+	}
+	if url, ok := os.LookupEnv("SONGS_BASE_URL"); ok {
+		songsBaseUrl = url
+	}
+	if url, ok := os.LookupEnv("CONTRACTS_BASE_URL"); ok {
+		contractsBaseUrl = url
+	}
+
+	// setup http handlers
 	http.HandleFunc("/song", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -116,10 +135,8 @@ func main() {
 			http.Error(w, "the method is not implemented.", http.StatusNotImplemented)
 		}
 	})
-	port, err := strconv.Atoi(os.Getenv("PORT"))
-	if err != nil {
-		port = 9000
-	}
+
+	// listen
 	log.Printf("listening on port %v...\n", port)
 	err = http.ListenAndServe(fmt.Sprint(":", port), nil)
 	log.Fatal(err)

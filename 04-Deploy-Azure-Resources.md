@@ -135,7 +135,7 @@ Provision resources
 
 ```bash
 # Install istio to your cluster
-istioctl install --set profile=minimal -y
+istioctl install -y
 
 # Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later
 kubectl label namespace default istio-injection=enabled
