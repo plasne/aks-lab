@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type contract struct {
@@ -40,6 +43,7 @@ func getContractForArtist(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "the song could not be marshalled.", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Add("Content-Type", "application/json")
 	_, err = w.Write(bytes)
 	if err != nil {
 		http.Error(w, "the song could not be written.", http.StatusInternalServerError)
@@ -56,7 +60,11 @@ func main() {
 			http.Error(w, "the method is not implemented.", http.StatusNotImplemented)
 		}
 	})
-	log.Printf("listening on port %v...\n", 9200)
-	err := http.ListenAndServe(":9200", nil)
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		port = 9200
+	}
+	log.Printf("listening on port %v...\n", port)
+	err = http.ListenAndServe(fmt.Sprint(":", port), nil)
 	log.Fatal(err)
 }

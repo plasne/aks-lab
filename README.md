@@ -1,3 +1,13 @@
+
+https://www.linkedin.com/pulse/types-microservices-maxim-alexandrovich/
+
+AKS
+Istio
+ACR
+In-Memory (1 replica) then Storage (multiple replicas)
+AppGW
+AKS Insights
+
 # AKS Lab
 A short lab for getting an application up and running using Azure Container Service (AKS).
 

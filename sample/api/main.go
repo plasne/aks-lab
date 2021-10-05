@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"strconv"
 )
 
 type song struct {
@@ -71,9 +73,10 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	w.Header().Add("Content-Type", "application/json")
 	_, err = w.Write(bytes)
 	if err != nil {
-		http.Error(w, "the song could not be written.", http.StatusInternalServerError)
+		http.Error(w, "the song could not be returned.", http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
@@ -94,9 +97,10 @@ func storeSong(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get song from song service.", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Add("Content-Type", "application/json")
 	_, err = w.Write(body)
 	if err != nil {
-		http.Error(w, "the song could not be written.", http.StatusInternalServerError)
+		http.Error(w, "the song could not be returned.", http.StatusInternalServerError)
 		return
 	}
 }
@@ -112,7 +116,11 @@ func main() {
 			http.Error(w, "the method is not implemented.", http.StatusNotImplemented)
 		}
 	})
-	log.Printf("listening on port %v...\n", 9100)
-	err := http.ListenAndServe(":9100", nil)
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		port = 9000
+	}
+	log.Printf("listening on port %v...\n", port)
+	err = http.ListenAndServe(fmt.Sprint(":", port), nil)
 	log.Fatal(err)
 }
