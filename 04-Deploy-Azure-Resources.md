@@ -91,7 +91,7 @@ az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-count
     --node-vm-size $NODE_VM_SIZE --generate-ssh-keys --enable-managed-identity
 
 # Integrate ACR
-az aks update --attach-acr $ACR_NAME
+az aks update --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --attach-acr $ACR_NAME
 
 # Get aks credentials to use kubectl
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
