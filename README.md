@@ -23,6 +23,7 @@ Azure CLI 2.0 and kubectl are already installed in Cloud Shell (https://azure.mi
 Provision an "Azure Container Service (AKS)" cluster in Azure using the default parameters:
 * Node count: 3
 * Node virtual machine size: 3x Standard D2 v2
+
 Install istio on your cluster.
 
 While the resource provisions, you may move on to provisioning the Azure Container Registry.
