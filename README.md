@@ -18,26 +18,72 @@ Azure CLI 2.0 and kubectl are already installed in Cloud Shell (https://azure.mi
 
 &nbsp;
 
+## Provision an Azure Container Registry
+
+Provision an "Azure Container Registry" in Azure using the default parameters:
+* SKU: Standard
+
+Ref:
+* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal
+* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-azure-cli
+* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-powershell
+
+<details>
+  <summary>Provision ACR</summary>
+
+```bash
+# Set up the following variables (configure as needed)
+SUBSCRIPTION=<your subscription Id or name>
+REGION_NAME=eastus
+RESOURCE_GROUP=akslabhv-rg
+ACR_NAME=akslabhv
+ACR_SKU=Standard
+
+# Login to Azure
+az login
+
+# Set your default subscription
+az account set -s $SUBSCRIPTION
+
+# Confirm it is set correctly
+az account show
+
+# Create resource group
+az group create --name $RESOURCE_GROUP --location $REGION_NAME 
+
+# Create Azure container registry
+az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku $ACR_SKU
+```
+
+</details>
+
+&nbsp;
+
 ## Provision a Kubernetes Cluster
 
-Provision an "Azure Container Service (AKS)" cluster in Azure using the default parameters:
+Provision an "Azure Container Service (AKS)" cluster in Azure using the following configuration:
+
 * Node count: 3
 * Node virtual machine size: 3x Standard D2 v2
+* Integrated with the ACR you created above (so that an AcrPull role is set for the cluster's managed identity)
 
 Install istio on your cluster.
 
 While the resource provisions, you may move on to provisioning the Azure Container Registry.
 
 Ref:
+
 * https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal
 * https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough
 * https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys
 * https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ssh-from-windows
-* https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-service-principal
+* https://docs.microsoft.com/en-us/azure/aks/use-managed-identity
+* https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration?tabs=azure-cli
+* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli
 * https://istio.io/latest/docs/
 
 <details>
-  <summary>Provision AKS and ACR</summary>
+  <summary>Provision AKS</summary>
 
 Download istioctl
 
@@ -62,33 +108,19 @@ Provision resources
 
 ```bash
 # Set up the following variables (configure as needed)
-SUBSCRIPTION=<your subscription Id or name>
-REGION_NAME=eastus
-RESOURCE_GROUP=akslabhv-rg
-ACR_NAME=akslabhv
+RESOURCE_GROUP=akslabhv-rg # created above
+ACR_NAME=akslabhv # created above
 CLUSTER_NAME=akslabhv
 ISTIO_VERSION=1.11.3
 NODE_COUNT=3
 NODE_VM_SIZE=Standard_DS2_v2
 
-# Login to Azure
-az login
-
-# Set your default subscription
-az account set -s $SUBSCRIPTION
-
-# Confirm it is set correctly
-az account show
-
-# Create resource group
-az group create --name $RESOURCE_GROUP --location $REGION_NAME 
-
-# Create Azure container registry
-az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Standard
-
 # Create cluster
 az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-count $NODE_COUNT \
-    --node-vm-size $NODE_VM_SIZE --generate-ssh-keys --attach-acr $ACR_NAME
+    --node-vm-size $NODE_VM_SIZE --generate-ssh-keys --enable-managed-identity
+
+# Integrate ACR
+az aks update --attach-acr $ACR_NAME
 
 # Get aks credentials to use kubectl
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
@@ -101,19 +133,6 @@ kubectl label namespace default istio-injection=enabled
 ```
 
 </details>
-
-&nbsp;
-
-## Provision an Azure Container Registry
-
-Provision an "Azure Container Registry" in Azure using the default parameters:
-* Admin user: Enable
-* SKU: Standard
-
-Ref:
-* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal
-* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-azure-cli
-* https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-powershell
 
 &nbsp;
 
