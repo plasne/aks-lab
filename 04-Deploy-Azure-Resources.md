@@ -108,6 +108,7 @@ Install Istio on the AKS cluster.
 Ref:
 
 * https://istio.io/latest/docs/
+* https://istio.io/latest/docs/setup/additional-setup/config-profiles/
 
 <details>
   <summary>Install Istio</summary>
@@ -135,7 +136,7 @@ Provision resources
 
 ```bash
 # Install istio to your cluster
-istioctl install --set profile=minimal -y
+istioctl install --set profile=default -y
 
 # Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later
 kubectl label namespace default istio-injection=enabled
@@ -144,4 +145,3 @@ kubectl label namespace default istio-injection=enabled
 </details>
 
 &nbsp;
-
