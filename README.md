@@ -14,6 +14,11 @@ First, write your application and verify it works locally...
 - [02: Develop Process Services](./02-Develop-Process-Services.md)
 - [03: Develop API](./03-Develop-API.md)
 
-Second, deploy the Azure infrastructure to run your application...
+Second, ...
 
-- [04: Deploy Azure Resources](./04-Deploy-Azure-Resources.md)
+- [04: Build Dockerfile](./04-Build-Dockerfile.md)
+
+Third, deploy the Azure infrastructure to run your application...
+
+- [05: Deploy Application](./05-Deploy-Application.md)
+- [06: Deploy Azure Resources](./06-Deploy-Azure-Resources.md)
