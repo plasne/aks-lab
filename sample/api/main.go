@@ -115,7 +115,7 @@ func main() {
 	godotenv.Load()
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
-		port = 9000
+		port = 80
 	}
 	if url, ok := os.LookupEnv("SONGS_BASE_URL"); ok {
 		songsBaseUrl = url

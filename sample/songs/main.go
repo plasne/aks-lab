@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type song struct {
@@ -98,6 +100,7 @@ func store(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	godotenv.Load()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -110,7 +113,7 @@ func main() {
 	})
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
-		port = 9100
+		port = 80
 	}
 	log.Printf("listening on port %v...\n", port)
 	err = http.ListenAndServe(fmt.Sprint(":", port), nil)
