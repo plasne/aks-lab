@@ -20,5 +20,5 @@ Second, ...
 
 Third, deploy the Azure infrastructure to run your application...
 
-- [05: Deploy Application](./05-Deploy-Application.md)
-- [06: Deploy Azure Resources](./06-Deploy-Azure-Resources.md)
+- [05: Deploy Azure Resources](./05-Deploy-Azure-Resources.md)
+- [06: Deploy Application](./06-Deploy-Application.md)
