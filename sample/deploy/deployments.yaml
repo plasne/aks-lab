@@ -1,86 +1,67 @@
+---
 apiVersion: apps/v1
-kind: Deployment 
+kind: Deployment
 metadata:
-  name: songs 
+  name: songs-app
+  labels:
+    app: songs
 spec:
+  replicas: 1
   selector:
-    matchLabels: 
-      app: songs 
-  template: 
-    metadata: 
+    matchLabels:
+      app: songs
+  template:
+    metadata:
       labels:
         app: songs
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers: 
-        - image: lilaakslab.azurecr.io/sample_songs:v1
-          name: songs
-          resources:
-            requests:
-              cpu: 100m
-              memory: 64Mi
-            limits: 
-              cpu: 250m
-              memory: 128Mi
-          ports:
-            - containerPort: 80
-              name: http
+      containers:
+      - name: songs
+        image: pelasneakslabacr.azurecr.io/songs:1.0.0
+        ports:
+        - containerPort: 80
 ---
 apiVersion: apps/v1
-kind: Deployment 
+kind: Deployment
 metadata:
-  name: contracts 
+  name: contracts-app
+  labels:
+    app: contracts
 spec:
+  replicas: 1
   selector:
-    matchLabels: 
-      app: contracts 
-  template: 
-    metadata: 
+    matchLabels:
+      app: contracts
+  template:
+    metadata:
       labels:
         app: contracts
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers: 
-        - image: lilaakslab.azurecr.io/sample_contracts:v1
-          name: contracts
-          resources:
-            requests:
-              cpu: 100m
-              memory: 64Mi
-            limits: 
-              cpu: 250m
-              memory: 128Mi
-          ports:
-            - containerPort: 80
-              name: http
+      containers:
+      - name: contracts
+        image: pelasneakslabacr.azurecr.io/contracts:1.0.0
+        ports:
+        - containerPort: 80
+        
 ---
 apiVersion: apps/v1
-kind: Deployment 
+kind: Deployment
 metadata:
-  name: songapi 
+  name: api-app
+  labels:
+    app: api
 spec:
+  replicas: 1
   selector:
-    matchLabels: 
-      app: songapi 
-  template: 
-    metadata: 
+    matchLabels:
+      app: api
+  template:
+    metadata:
       labels:
-        app: songapi
+        app: api
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers: 
-        - image: lilaakslab.azurecr.io/sample_songapi:v1
-          name: songapi
-          resources:
-            requests:
-              cpu: 100m
-              memory: 64Mi
-            limits: 
-              cpu: 250m
-              memory: 128Mi
-          ports:
-            - containerPort: 80
-              name: http
+      containers:
+      - name: api
+        image: pelasneakslabacr.azurecr.io/api:1.0.0
+        ports:
+        - containerPort: 80

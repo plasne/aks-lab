@@ -4,13 +4,10 @@ metadata:
   name: songs
 spec:
   type: ClusterIP
+  ports:
+  - port: 80
   selector:
     app: songs
-  ports:
-    - port: 80
-      name: http 
-      protocol: TCP 
-      targetPort: http
 ---
 apiVersion: v1
 kind: Service
@@ -18,26 +15,18 @@ metadata:
   name: contracts
 spec:
   type: ClusterIP
+  ports:
+  - port: 80
   selector:
     app: contracts
-  ports:
-    - port: 80
-      name: http 
-      protocol: TCP 
-      targetPort: http
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: songapi
+  name: api
 spec:
   type: LoadBalancer
-  selector:
-    app: songapi
   ports:
-    - port: 80
-      name: http 
-      protocol: TCP 
-      targetPort: http
-      
-
+  - port: 80
+  selector:
+    app: api
