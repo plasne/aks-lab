@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: songs
+spec:
+  type: ClusterIP
+  selector:
+    app: songs
+  ports:
+    - port: 80
+      name: http 
+      protocol: TCP 
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contracts
+spec:
+  type: ClusterIP
+  selector:
+    app: contracts
+  ports:
+    - port: 80
+      name: http 
+      protocol: TCP 
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: songapi
+spec:
+  type: LoadBalancer
+  selector:
+    app: songapi
+  ports:
+    - port: 80
+      name: http 
+      protocol: TCP 
+      targetPort: http
+      
+
