@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contracts-deployment
+  labels:
+    app: contracts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contracts
+  template:
+    metadata:
+      labels:
+        app: contracts
+    spec:
+      containers:
+      - name: contracts
+        image: pelasneakslabacr.azurecr.io/contracts:1.0.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contracts
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: contracts
