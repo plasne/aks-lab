@@ -1,16 +1,13 @@
-# syntax=docker/dockerfile:1
-FROM golang:1.16-alpine
-
-WORKDIR /app
-
-COPY ./api/go.mod ./
-COPY ./api/go.sum ./
+FROM golang:1.17-alpine as build
+WORKDIR /build
+COPY ./go.mod .
+COPY ./go.sum .
+COPY ./*.go .
 RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o api .
 
-COPY ./api/*.go ./
-
-RUN go build -o /api
-
+FROM scratch as run
+WORKDIR /app
+COPY --from=build /build/api .
 EXPOSE 80
-
-CMD [ "/api" ]
+CMD [ "./api" ]

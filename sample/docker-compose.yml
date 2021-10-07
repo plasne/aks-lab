@@ -4,21 +4,21 @@ services:
   songs:
     container_name: songs
     build: 
-      context: .
-      dockerfile: ./songs/Dockerfile
+      context: ./songs
+      dockerfile: ./Dockerfile
     ports:
       - "9100:80"
   contracts:
     container_name: contracts
     build: 
-      context: .
-      dockerfile: ./contracts/Dockerfile
+      context: ./contracts
+      dockerfile: ./Dockerfile
     ports:
       - "9200:80"
   songapi:
     container_name: songapi
     build: 
-      context: .
-      dockerfile: ./api/Dockerfile
+      context: ./api
+      dockerfile: ./Dockerfile
     ports:
       - "80:80"

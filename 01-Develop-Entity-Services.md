@@ -8,10 +8,6 @@ In a microservices architecture it is desirable to have a service for each entit
 
 - Compartmentalizing the implementation details of an entity's storage to this service allows for an easy separation of concern. For instance, developers that need to use the entity don't need to know anything about how the data is stored or retrieved; they can simply operate on the public contract of this service.
 
-## Debugging
-
-write some stuff
-
 ## Songs
 
 You will develop a Songs Entity Service that will allow you to store (in-memory) and retrieve songs by ID. It should adhere to the following contract...
@@ -209,6 +205,12 @@ Content-Length: 40
 ```
 
 In reality, you would probably want to be able to store new contracts and adjust existing contracts with this entity service, but we are not going to do that as part of this lab.
+
+## Debugging
+
+To complete this activity, make sure your VSCODE development environment is configured to support debugging.
+
+- https://code.visualstudio.com/docs/languages/go
 
 ## Tips
 
