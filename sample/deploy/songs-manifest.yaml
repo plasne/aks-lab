@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: songs-app
+  labels:
+    app: songs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: songs
+  template:
+    metadata:
+      labels:
+        app: songs
+    spec:
+      containers:
+      - name: songs
+        image: pelasneakslabacr.azurecr.io/songs:1.0.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: songs
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: songs
