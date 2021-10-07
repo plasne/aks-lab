@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: client
+  name: client
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+        version: v1
+      name: client
+    spec:
+      containers:
+      - name: client
+        image: ubuntu
+        command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done"]
