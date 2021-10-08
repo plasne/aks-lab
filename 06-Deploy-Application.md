@@ -78,13 +78,15 @@ spec:
 
 &nbsp;
 
-A Kubernetes service is a workload that abstracts the IP address for networked workloads.
+A Kubernetes service is an abstract way to expose an application running on a set of Pods as a network service.
 A Kubernetes service acts as a load balancer and redirects traffic to the specific ports of specified ports by using port-forwarding rules.
-Build a YAML file for each service (songs, contracts, api)
+Build a YAML file for each service (songs, contracts, api). The api service is the only service that needs to be publicly exposed, so not all services will be of the same type.
 
 Ref:
+
+* https://kubernetes.io/docs/concepts/services-networking/service
+* https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
 * https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster
-* https://v1-8.docs.kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 
 <details>
   <summary>Service YAML File Sample</summary>
