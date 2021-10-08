@@ -2,7 +2,7 @@
 
 Perform the following steps to deploy your application:
 
-## Push the containers to ACR.
+## Push the images to ACR
 
 Ref:
 
@@ -129,9 +129,60 @@ Once all pods are in running state and you have an external IP for your api serv
 curl http://MYEXTERNAL-IP/song?id=6
 ```
 
+## Debugging
+
+You can get a shell to a running container on a cluster's pod by using the `kubectl exec` command. In our case we could use that to curl the internal services (songs, contract) by deploying a client and using exec to get into it.
+
+Ref:
+
+https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
+
+<details>
+  <summary>Client YAML File Sample</summary>
+
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: client
+  name: client
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+        version: v1
+      name: client
+    spec:
+      containers:
+      - name: client
+        image: ubuntu
+        command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done; apt-get update && apt-get install -y curl"]
+```
+
 </details>
 
 &nbsp;
+
+```bash
+# Deploy your client (adjust filename as needed)
+kubectl apply -f client-manifest.yaml
+
+# View all the pods that are running in your cluster
+kubectl get pods
+
+# Check the containers that are running on your client pod (notice that an istio sidecar container is running on every pod -more on that later :)
+kubectl get pods [POD_NAME_HERE] -o jsonpath='{.spec.containers[*].name}'
+
+# Using the Pod name use kubectl exec 
+kubectl exec -it [POD_NAME_HERE] -c [CONTAINER_NAME_HERE] -- /bin/bash
+```
 
 ## Some other things to try
 
