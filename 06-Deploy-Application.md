@@ -163,7 +163,7 @@ spec:
       containers:
       - name: client
         image: ubuntu
-        command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done; apt-get update && apt-get install -y curl"]
+        command: ["/bin/bash", "-ec", "apt-get update && apt-get install curl -y && while :; do echo '.'; sleep 5 ; done"]
 ```
 
 </details>
