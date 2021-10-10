@@ -27,7 +27,7 @@ func getContractForArtist(w http.ResponseWriter, r *http.Request) {
 	artist := r.URL.Query().Get("artist")
 	var found *contract
 	for _, contract := range contracts {
-		if contract.Artist == artist {
+		if strings.EqualFold(contract.Artist, artist) {
 			found = &contract
 			break
 		}
