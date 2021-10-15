@@ -61,9 +61,7 @@ spec:
 ```
 
 >NOTE: For the purpose of this lab, you can use a wildcard `*` value for the host in the Gateway and VirtualService configurations. In a real world scenario, you would use your host's domain name.
-
 </details>
-
 &nbsp;
 
 Deploy your manifest YAML file.

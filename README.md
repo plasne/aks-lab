@@ -22,3 +22,4 @@ Third, deploy the Azure infrastructure to run your application...
 
 - [05: Deploy Azure Resources](./05-Deploy-Azure-Resources.md)
 - [06: Deploy Application](./06-Deploy-Application.md)
+- [07: Configure Ingress](./07-Configure-Ingress.md)
