@@ -1,0 +1,1 @@
+# Configure Ingress using Istio
