@@ -25,7 +25,7 @@ kind: Service
 metadata:
   name: api
 spec:
-  type: LoadBalancer
+  type: ClusterIP # LoadBalancer when not using Istio Gateway
   ports:
   - port: 80
   selector:
