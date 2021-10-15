@@ -10,7 +10,7 @@ Ref:
 * https://kubernetes.io/docs/concepts/services-networking/ingress/
 * https://istio.io/latest/about/service-mesh/
 
-## Configure Istio using an Ingress Gateway
+## Create an Istio Gateway and configure routes for traffic
 
 Istio traffic management relies on the Envoy proxies that are deployed along with your services, and lets you easily control the flow of traffic and API calls between services.
 
