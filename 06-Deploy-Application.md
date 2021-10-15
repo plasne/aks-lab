@@ -163,7 +163,7 @@ spec:
       containers:
       - name: client
         image: ubuntu
-        command: ["/bin/bash", "-ec", "apt-get update && apt-get install curl -y && while :; do echo '.'; sleep 5 ; done"]
+        command: ["/bin/bash", "-ec", "while :; do echo '.'; sleep 5 ; done"]
 ```
 
 </details>
@@ -182,6 +182,11 @@ kubectl get pods [POD_NAME_HERE] -o jsonpath='{.spec.containers[*].name}'
 
 # Using the Pod name use kubectl exec 
 kubectl exec -it [POD_NAME_HERE] -c [CONTAINER_NAME_HERE] -- /bin/bash
+
+# Install curl, and curl to any of the internal services
+apt-get update
+apt-get install curl -y
+curl http://contracts?artist=Taylor+Swift
 ```
 
 ## Some other things to try
