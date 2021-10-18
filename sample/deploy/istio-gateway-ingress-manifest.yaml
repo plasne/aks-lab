@@ -2,8 +2,6 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: song-gateway
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
