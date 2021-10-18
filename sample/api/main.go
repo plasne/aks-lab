@@ -135,6 +135,9 @@ func main() {
 			http.Error(w, "the method is not implemented.", http.StatusNotImplemented)
 		}
 	})
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		// returns 200
+	})
 
 	// listen
 	log.Printf("listening on port %v...\n", port)

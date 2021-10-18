@@ -23,10 +23,7 @@ spec:
   gateways:
   - default/song-gateway
   http:
-  - match:
-    - uri:
-        exact: /song
-    route:
+  - route:
     - destination:
         host: api
         port:

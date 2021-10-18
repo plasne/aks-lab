@@ -74,10 +74,20 @@ Now that Ingress is configured, update the type of your api service to ClusterIP
 
 ## Test your configuration
 
-Get the external IP for your istio-ingressgateway to test your API using curl or a browser.
+Get the internal IP for your istio-ingressgateway to test your API using curl or a browser.
 
 ```bash
-ISTIO_GATEWAY_EXTERNALIP=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
-curl -i http://$ISTIO_GATEWAY_EXTERNALIP/song?id=7
+kubectl exec -it <client-pod-name> -c client -- /bin/bash
+
+ISTIO_GATEWAY_INTERNALIP=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+curl -i http://$ISTIO_GATEWAY_INTERNALIP/song?id=7
+```
+
+## 
+
+Create an App Gateway instance...
+
+```bash
+az network application-gateway create -g pelasne-aks-lab -n pelasne-gw --sku Standard_v2 --subnet /subscriptions/41f2f239-ca68-48bf-b2f0-dff8b108965a/resourceGroups/MC_pelasne-aks-lab_pelasneakslab_eastus/providers/Microsoft.Network/virtualNetworks/aks-vnet-28051105/subnets/appgw-subnet --servers 10.240.0.7 --public-ip-address pelasne-appgw-ip
 ```

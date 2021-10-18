@@ -147,7 +147,7 @@ cd istio-1.11.3/bin
 
 # Install istio to your cluster
 kubectl create namespace istio-system
-./istioctl install -f manifests/profiles/default.yaml -f manifests/profiles/patch.yaml
+./istioctl install -f ../manifests/profiles/default.yaml -f ../manifests/profiles/patch.yaml
 
 # Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later
 kubectl label namespace default istio-injection=enabled
