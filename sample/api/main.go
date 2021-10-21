@@ -30,10 +30,25 @@ var songsBaseUrl string = "http://songs"
 var contractsBaseUrl string = "http://contracts"
 
 func retrieveSong(w http.ResponseWriter, r *http.Request) {
-	// call "song" entity service
+	// determine the expected x-api-version
+	apiVersion := r.Header.Get("x-api-version")
+
+	// create the request
 	songUrl := fmt.Sprint(songsBaseUrl, "/?id=", r.URL.Query().Get("id"))
+	songReq, err := http.NewRequest("GET", songUrl, nil)
+	if apiVersion != "" {
+		songReq.Header.Set("x-api-version", apiVersion)
+	}
+	if err != nil {
+		http.Error(w, "failed to create song request.", http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	// call "song" entity service
 	log.Printf("fetching song from entity service (%v)...\n", songUrl)
-	songResp, err := http.Get(songUrl)
+	client := http.Client{}
+	songResp, err := client.Do(songReq)
 	if err != nil {
 		http.Error(w, "failed to contact song service.", http.StatusInternalServerError)
 		log.Println(err)
@@ -88,9 +103,26 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func storeSong(w http.ResponseWriter, r *http.Request) {
+	// determine the expected x-api-version
+	apiVersion := r.Header.Get("x-api-version")
+
+	// create the request
+	songUrl := fmt.Sprint(songsBaseUrl, "/?id=", r.URL.Query().Get("id"))
+	songReq, err := http.NewRequest("POST", songUrl, r.Body)
+	songReq.Header.Set("Content-Type", "application/json")
+	if apiVersion != "" {
+		songReq.Header.Set("x-api-version", apiVersion)
+	}
+	if err != nil {
+		http.Error(w, "failed to create song request.", http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
 	// call "song" entity service
 	log.Println("federating store-song request to entity service...")
-	resp, err := http.Post(songsBaseUrl, "application/json", r.Body)
+	client := http.Client{}
+	resp, err := client.Do(songReq)
 	if err != nil {
 		http.Error(w, "failed to contact song service.", http.StatusInternalServerError)
 		return

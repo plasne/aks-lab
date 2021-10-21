@@ -70,8 +70,8 @@ spec:
   - songs
   http:
   - match:
-    - queryParams:
-        api-version:
+    - headers:
+        x-api-version:
           exact: v2
     route:
     - destination:
