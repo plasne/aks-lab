@@ -21,6 +21,35 @@ spec:
         ports:
         - containerPort: 80
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: songs-v2-app
+  labels:
+    app: songs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: songs
+  template:
+    metadata:
+      labels:
+        app: songs
+        version: v2
+    spec:
+      containers:
+      - name: songs
+        image: pelasneakslabacr.azurecr.io/songs:2.1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: MONGO_CONNSTRING
+            valueFrom:
+              secretKeyRef:
+                name: plasne-secrets
+                key: MONGO_CONNSTRING
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -40,18 +69,14 @@ spec:
   hosts:
   - songs
   http:
-  - route:
+  - match:
+    - queryParams:
+        api-version:
+          exact: v2
+    route:
     - destination:
         host: songs
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: songs-v1-route
-spec:
-  hosts:
-  - songs-v1
-  http:
+        subset: v2
   - route:
     - destination:
         host: songs
