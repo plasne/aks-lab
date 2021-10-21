@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: pelasneakslabacr.azurecr.io/api:1.1.0
+        image: pelasneakslabacr.azurecr.io/api:1.2.0
         ports:
         - containerPort: 80
 ---

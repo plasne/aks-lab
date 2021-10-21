@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,14 +13,6 @@ import (
 
 	"github.com/joho/godotenv"
 )
-
-type song struct {
-	Id      int     `json:"id"`
-	Title   string  `json:"title"`
-	Artist  string  `json:"artist"`
-	Payment float64 `json:"payment"`
-	Genre   string  `json:"genre"`
-}
 
 type contract struct {
 	Artist  string  `json:"artist"`
@@ -41,7 +34,7 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		http.Error(w, "failed to create song request.", http.StatusInternalServerError)
-		log.Println(err)
+		log.Printf("failed to create song request - %v", err)
 		return
 	}
 
@@ -51,12 +44,23 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 	songResp, err := client.Do(songReq)
 	if err != nil {
 		http.Error(w, "failed to contact song service.", http.StatusInternalServerError)
-		log.Println(err)
+		log.Printf("failed to contact song service - %v", err)
+		return
+	}
+	if songResp.StatusCode < 200 || songResp.StatusCode > 299 {
+		body, err := io.ReadAll(songResp.Body)
+		if err != nil {
+			http.Error(w, "received error from song service.", http.StatusInternalServerError)
+			log.Printf("received error from song service - %v %v", songResp.StatusCode, err)
+		} else {
+			http.Error(w, string(body), songResp.StatusCode)
+			log.Printf("received error from song service - %v %v", songResp.StatusCode, string(body))
+		}
 		return
 	}
 
 	// write the output
-	var song song
+	var song map[string]interface{}
 	err = json.NewDecoder(songResp.Body).Decode(&song)
 	if err != nil {
 		http.Error(w, "failed to get song from entity service.", http.StatusInternalServerError)
@@ -65,26 +69,42 @@ func retrieveSong(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("successfully retrieved song.")
 
-	// call "contracts" entity service
-	contractUrl := fmt.Sprint(contractsBaseUrl, "/?artist=", url.QueryEscape(song.Artist))
-	log.Printf("fetching contract from entity service (%v)...\n", contractUrl)
-	contractResp, err := http.Get(contractUrl)
-	if err != nil {
-		http.Error(w, "failed to contact entity service.", http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
+	// if there is an artist, get the artist's contract
+	artistAsInterface, hasArtist := song["artist"]
+	artist, artistIsString := artistAsInterface.(string)
+	if hasArtist && artistIsString {
+		// call "contracts" entity service
+		contractUrl := fmt.Sprint(contractsBaseUrl, "/?artist=", url.QueryEscape(artist))
+		log.Printf("fetching contract from entity service (%v)...\n", contractUrl)
+		contractResp, err := http.Get(contractUrl)
+		if err != nil {
+			http.Error(w, "failed to contact contracts service.", http.StatusInternalServerError)
+			log.Printf("failed to contact contracts service - %v", err)
+			return
+		}
+		if contractResp.StatusCode < 200 || contractResp.StatusCode > 299 {
+			body, err := io.ReadAll(contractResp.Body)
+			if err != nil {
+				http.Error(w, "received error from contracts service.", http.StatusInternalServerError)
+				log.Printf("received error from contracts service - %v %v", contractResp.StatusCode, err)
+			} else {
+				http.Error(w, string(body), contractResp.StatusCode)
+				log.Printf("received error from contracts service - %v %v", contractResp.StatusCode, string(body))
+			}
+			return
+		}
 
-	// extract the payment
-	var contract contract
-	err = json.NewDecoder(contractResp.Body).Decode(&contract)
-	if err != nil {
-		http.Error(w, "failed to get contract from entity service.", http.StatusInternalServerError)
-		log.Println(err)
-		return
+		// extract the payment
+		var contract contract
+		err = json.NewDecoder(contractResp.Body).Decode(&contract)
+		if err != nil {
+			http.Error(w, "failed to get contract from entity service.", http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+		log.Println("successfully retrieved contract.")
+		song["payment"] = contract.Payment
 	}
-	log.Println("successfully retrieved contract.")
-	song.Payment = contract.Payment
 
 	// write the output
 	bytes, err := json.Marshal(song)
@@ -125,6 +145,17 @@ func storeSong(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Do(songReq)
 	if err != nil {
 		http.Error(w, "failed to contact song service.", http.StatusInternalServerError)
+		return
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, "received error from contracts service.", http.StatusInternalServerError)
+			log.Printf("received error from contracts service - %v %v", resp.StatusCode, err)
+		} else {
+			http.Error(w, string(body), resp.StatusCode)
+			log.Printf("received error from contracts service - %v %v", resp.StatusCode, string(body))
+		}
 		return
 	}
 
