@@ -88,12 +88,19 @@ curl -i http://<use your ISTIO_GATEWAY_INTERNALIP>/song?id=7
 
 ## Create an App Gateway instance
 
-TODO:
-- Add why AppGateway is needed (WAF, ssl termination, https) and how Public IP address is proxied to private IP (versus using an external load balancer)
-- Add clarification on why health endpoint was needed - Retest and include commands to add health probe to app gateway
+The Application Gateway can provide SSL termination, layer-7 load balancing, and Web Application Firewall (WAF) in front of AKS.
+
+Provision an Application Gateway resource that has a public IP to accept internet traffic, and the backend points the to Istio Gateway internal IP.
+For the Application Gateway, you can create a new subnet on the existing vnet that was provisioned in chapter [05-Deploy-Azure-Resources](05-Deploy-Azure-Resources.md).
+
+Finally, add a health endpoint to your API that can be used to add a custom health probe to the Application Gateway. Without setting a custom health probe App Gateway will return a 502 Bad Gateway error.
+
+Ref:
+- https://docs.microsoft.com/en-us/azure/application-gateway/overview
+- https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-probe-overview
 
 <details>
-  <summary>Provision App Gateway</summary>
+  <summary>Provision and configure App Gateway</summary>
 
 ```bash
 # Set variables
@@ -103,14 +110,24 @@ APP_GATEWAY=akslabhv-gw
 APP_GATEWAY_SKU=Standard_v2
 PUBLIC_IP_ADDRESS=akslabhv-appgw-ip
 GW_SUBNET_NAME=appgw-subnet
+GW_HEALTHPROBE_NAME=health
 
-# Create subnet for the App Gateway
+# Create a subnet for the App Gateway
 az network vnet subnet create -g $RESOURCE_GROUP --vnet-name $VNET_NAME -n $GW_SUBNET_NAME --address-prefixes 10.0.0.0/24
 
 GW_SUBNET_ID=$(az network vnet subnet show --resource-group $RESOURCE_GROUP --vnet-name $VNET_NAME --name $GW_SUBNET_NAME --query id -o tsv)
 
 # Create App Gateway
 az network application-gateway create -g $RESOURCE_GROUP -n $APP_GATEWAY --sku $APP_GATEWAY_SKU --subnet $GW_SUBNET_ID --servers $ISTIO_GATEWAY_INTERNALIP --public-ip-address $PUBLIC_IP_ADDRESS
+
+# Create a custom health probe
+az network application-gateway probe create -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY -n $GW_HEALTHPROBE_NAME --protocol http --threshold 3 --timeout 30 --host $PUBLIC_IP_ADDRESS --path /health
+
+# Get app gateway backend HTTP settings
+HTTP_SETTINGS=$(az network application-gateway http-settings list -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY --query [0].name -o tsv)
+
+# Associate HTTP settings with your custom health probe
+az network application-gateway http-settings update -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY -n $HTTP_SETTINGS --probe $GW_HEALTHPROBE_NAME
 ```
 
 </details>
