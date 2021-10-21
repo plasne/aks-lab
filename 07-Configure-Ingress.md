@@ -72,6 +72,12 @@ kubect apply -f <manifest-file-name>.yaml
 
 Now that Ingress is configured, update the type of your api service to ClusterIP (vs. LoadBalancer).
 
+## Sample
+
+There is a sample manifest file you can use to validate the file you designed here:
+
+- [sample/deploy/istio-gateway-ingress-manifest.yaml](sample/deploy/istio-gateway-ingress-manifest.yaml)
+
 ## Test your configuration
 
 Get the internal IP for your istio-ingressgateway to test your API using curl or a browser.

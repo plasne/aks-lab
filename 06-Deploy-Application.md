@@ -129,6 +129,15 @@ Once all pods are in running state and you have an external IP for your api serv
 curl http://MYEXTERNAL-IP/song?id=6
 ```
 
+## Samples
+
+There are sample deployment files you can use to validate the files you wrote:
+
+- [sample/deploy/api-manifest.yaml](sample/deploy/api-manifest.yaml) - Deploys the API resources.
+- [sample/deploy/contacts-manifest.yaml](sample/deploy/contracts-manifest.yaml) - Deploys the contracts resources.
+- [sample/deploy/songs-manifest.yaml](sample/deploy/songs-manifest.yaml) - Deploys the songs resources.
+- [sample/deploy/client-manifest.yaml](sample/deploy/client-manifest.yaml) - Deploys a client for testing.
+
 ## Debugging
 
 You can get a shell to a running container on a cluster's pod by using the `kubectl exec` command. In our case we could use that to curl the internal services (songs, contract) by deploying a client and using exec to get into it.

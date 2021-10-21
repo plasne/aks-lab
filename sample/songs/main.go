@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
@@ -46,7 +47,13 @@ var songs = []song{
 	{24, "Nicki Minaj", "Barbie Dreams", "Rap"},
 }
 
+var songMutex sync.RWMutex
+
 func retrieve(w http.ResponseWriter, r *http.Request) {
+	// use a mutex to safely read from the songs
+	songMutex.RLock()
+	defer songMutex.RUnlock()
+
 	// get a valid id
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -81,8 +88,12 @@ func store(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "the body could not be decoded.", http.StatusBadRequest)
 		return
 	}
+
+	// use a mutex to protect a change to the songs
+	songMutex.Lock()
 	val.Id = len(songs)
 	songs = append(songs, val)
+	songMutex.Unlock()
 
 	// write JSON output
 	log.Printf("storing song id %v.\n", val.Id)
