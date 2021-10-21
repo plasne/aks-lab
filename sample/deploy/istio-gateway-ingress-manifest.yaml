@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: song-gateway
+  name: api-gateway
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
@@ -13,15 +13,15 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: song
+  name: api
 spec:
   hosts:
   - "*"
   gateways:
-  - default/song-gateway
+  - default/api-gateway
   http:
   - route:
     - destination:
