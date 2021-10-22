@@ -54,6 +54,7 @@ The case you are most likely to encounter is using an external database. For thi
 - Create a v2 version (<https://golang.org/doc/modules/major-version>) of the songs service.
 - Create an Azure Cosmos instance using the Mongo API.
 - Modify the v2 version of the songs service to read and write songs to Cosmos.
+- Build a new Dockerfile and test it locally as part of your solution.
 
 Do not deploy your service to AKS yet, we will do that in section 09.
 
@@ -127,5 +128,16 @@ Once we have 2 versions of our songs service with 2 different schemas (the ID is
 I prefer the 2nd approach because our API is not an authority on what should be in the song schema. If we wanted to create a v3 songs service that has 10 extra fields, so be it - the API could simply ignore all those fields and return them being none the wiser.
 
 Having said that, there are legitimate cases to be made for both options.
+
+</details>
+
+&nbsp;
+
+<details>
+  <summary>Routing in Docker</summary>
+
+When we deploy to AKS and use Istio, we will have the capability of routing to specific service versions by using the host name, path, querystring, headers, etc. Since we do not have these advanced routing capabilities in native Docker, you can...
+- Simply use docker-compose to test your solution with v1, then bring it up again and test with v2.
+- Give different names to your service versions (ex. songs-v1 and songs-v2).
 
 </details>

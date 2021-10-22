@@ -72,11 +72,31 @@ spec:
   - match:
     - headers:
         x-api-version:
+          exact: v1
+    route:
+    - destination:
+        host: songs
+        subset: v1
+  - match:
+    - headers:
+        x-api-version:
           exact: v2
     route:
     - destination:
         host: songs
         subset: v2
+  - match:
+    - headers:
+        x-api-version:
+          regex: ".*"
+    fault:
+      abort:
+        percentage:
+          value: 100
+        httpStatus: 400
+    route:
+      - destination:
+          host: service-that-can-return-proper-error-message
   - route:
     - destination:
         host: songs
