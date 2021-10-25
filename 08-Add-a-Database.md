@@ -12,7 +12,7 @@ kubectl scale deployment contracts-app --replicas=3
 kubectl scale deployment songs-app --replicas=3
 ```
 
-The API service is stateless so there is no problem with scaling it. While unrealistic, our contracts service also cannot be modified (the contracts are hardcoded), so it can also be scaled. However, if you scaled the songs service and posted a new song to it...
+The API service is stateless so there is no problem with scaling it. While unrealistic, our contracts service also cannot be modified (the contracts are hard-coded), so it can also be scaled. However, if you scaled the songs service and posted a new song to it...
 
 ```bash
 > curl -i -H "x-api-version: v1" -X POST -d '{ "artist": "The Oh Hellos", "title": "Bitter Water", "genre": "Folk" }' "http://52.150.27.198/song"
@@ -44,55 +44,73 @@ One other problem with this design is that if a replicas is destroyed for any re
 ## Solutions
 
 As mentioned, there are a number of solutions to this problem:
+
 - External Database - in Azure, on-premises, in the AKS cluster, etc.
 - Replication - you could make changes to a single primary and replicate those changes to the secondary (read-only) replicas.
 - Shared Volume - you could share a volume between the replicas and have them all read/write to the same file(s).
 
-## Requirements
+The case you are most likely to encounter is using an external database which is what we will use in this chapter.
 
-The case you are most likely to encounter is using an external database. For this exercise...
-- Create a v2 version (<https://golang.org/doc/modules/major-version>) of the songs service.
-- Create an Azure Cosmos instance using the Mongo API.
-- Modify the v2 version of the songs service to read and write songs to Cosmos.
-- Build a new Dockerfile and test it locally as part of your solution.
-
-Do not deploy your service to AKS yet, we will do that in section 09.
-
-## Discussion
+## Create an Azure Cosmos instance using the Mongo API
 
 ### Why use the Mongo API?
 
-When this lab was written, there is no SDK for using the Cosmos Core API wire protocol in Golang. We could use the REST API, Mongo API, or Cassandra API. I chose the Mongo API because it is the easiest to use.
+When this lab was written, there is no SDK for using the Cosmos Core API wire protocol in Golang.
+We could use the REST API, Mongo API, or Cassandra API. I chose the Mongo API because it is the easiest to use.
 
-## Tips
+Ref:
 
-Open these tips if you are having trouble. There is also a complete sample in the appropriate directory.
+- https://docs.microsoft.com/en-us/azure/cosmos-db/mongodb/mongodb-introduction
+- https://docs.microsoft.com/en-us/cli/azure/cosmosdb?view=azure-cli-latest#az_cosmosdb_create
 
 <details>
   <summary>Provision an Azure Cosmos instance with the Mongo API</summary>
 
 ```bash
+# set your variables
+RESOURCE_GROUP=akslabhv-rg
+DB_NAME=akslabhv-mongodb
+
 # create the cosmos account
-az cosmosdb create --name pelasne-mongodb --resource-group pelasne-test --kind MongoDB --server-version 4.0
+az cosmosdb create --name $DB_NAME --resource-group $RESOURCE_GROUP --kind MongoDB --server-version 4.0
 
 # create the database
-az cosmosdb mongodb database create --account-name pelasne-mongodb --name db --resource-group pelasne-test
+az cosmosdb mongodb database create --account-name $DB_NAME --name db --resource-group $RESOURCE_GROUP
 
 # create the collection
-az cosmosdb mongodb collection create --account-name pelasne-mongodb --database-name db --resource-group pelasne-test --name col
+az cosmosdb mongodb collection create --account-name $DB_NAME --database-name db --resource-group $RESOURCE_GROUP --name col
 
 # get the connection string options
-az cosmosdb keys list --type connection-strings --name pelasne-mongodb2 --resource-group pelasne-test
+az cosmosdb keys list --type connection-strings --name $DB_NAME --resource-group $RESOURCE_GROUP
 ```
 
 </details>
 
 &nbsp;
 
+## Create a v2 version of the songs service to read and write songs to Cosmos
+
+Create a v2 version of the songs service to read and write songs to Cosmos.
+
+Build a new Dockerfile and test it locally as part of your solution.
+
+Do not deploy your service to AKS yet, we will do that in section 09.
+
+Ref:
+
+- https://golang.org/doc/modules/major-version
+- https://pkg.go.dev/go.mongodb.org/mongo-driver#readme-usage
+- https://pkg.go.dev/context
+- https://docs.microsoft.com/en-us/azure/cosmos-db/mongodb/create-mongodb-go
+- https://docs.mongodb.com/drivers/go/current/fundamentals/bson/
+
+### Tips for updating the song entity service
+
 <details>
   <summary>Song IDs</summary>
 
 When our song database was in-memory on a single replica it was easy enough to use a mutex to ensure that we could increment our IDs. However, changing to a distributed system makes that more complex. There are multiple ways to address this:
+
 - We could use a system that handles external mutexes for distributed systems (ex. Zookeeper).
 - We could use a trigger in Mongo to build an incrementing ID.
 - We could let Mongo generate a unique alphanumeric ID on write.
@@ -103,12 +121,17 @@ In the sample, I chose the last option as this is the easiest to implement and d
 
 &nbsp;
 
+## Update your API so that both versions of the songs service are supported
+
+### Tips for updating the API
+
 <details>
   <summary>Versioning the API</summary>
 
 You may notice from the sample, that I do NOT create a major version of the API, like I suggested for the song service. Why?
 
 The song service needs to be a new major version because:
+
 - The data contract is changing - the ID will be a string now instead of an int.
 - The behaviors are changing - changes are persisted, multiple replicas are now supported.
 
@@ -122,6 +145,7 @@ However, the API service can continue to operate in the exact same way as it did
   <summary>Varying Schemas</summary>
 
 Once we have 2 versions of our songs service with 2 different schemas (the ID is an integer in v1 and a string in v2), we cannot deserialize to a single "song" struct. There are several ways we could solve this problem:
+
 - We could have 2 separate song structs and determine the one to use based on the version of the service we called.
 - We could simply deserialize to `map[string]interface{}`, in which case we don't care what the underlying service returns.
 
@@ -133,10 +157,13 @@ Having said that, there are legitimate cases to be made for both options.
 
 &nbsp;
 
+## Test your solution
+
 <details>
   <summary>Routing in Docker</summary>
 
 When we deploy to AKS and use Istio, we will have the capability of routing to specific service versions by using the host name, path, querystring, headers, etc. Since we do not have these advanced routing capabilities in native Docker, you can...
+
 - Simply use docker-compose to test your solution with v1, then bring it up again and test with v2.
 - Give different names to your service versions (ex. songs-v1 and songs-v2).
 
