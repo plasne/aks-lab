@@ -60,14 +60,23 @@ func retrieve(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "a valid ID was not provided.", http.StatusBadRequest)
 		return
 	}
-	if id < 0 || id >= len(songs) {
+
+	// find within the array
+	var val *song
+	for _, x := range songs {
+		if x.Id == id {
+			val = &x
+			break
+		}
+	}
+	if val == nil {
 		http.Error(w, "the ID was out-of-range.", http.StatusBadRequest)
 		return
 	}
 
 	// write JSON output
 	log.Printf("retrieving song id %v.\n", id)
-	bytes, err := json.Marshal(songs[id])
+	bytes, err := json.Marshal(val)
 	if err != nil {
 		http.Error(w, "the song could not be marshalled.", http.StatusInternalServerError)
 		return
@@ -91,7 +100,11 @@ func store(w http.ResponseWriter, r *http.Request) {
 
 	// use a mutex to protect a change to the songs
 	songMutex.Lock()
-	val.Id = len(songs)
+	for _, x := range songs {
+		if x.Id >= val.Id {
+			val.Id = x.Id + 1
+		}
+	}
 	songs = append(songs, val)
 	songMutex.Unlock()
 
