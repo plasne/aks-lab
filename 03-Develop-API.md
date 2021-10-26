@@ -119,3 +119,5 @@ The GET method will return information about the song as well as how the artist 
 ## Tips
 
 - When running locally, you will probably want the services running on different ports. When running in production, you will probably want the services all running on port 80. Environment Variables are a good way to do this.
+
+- When the API calls the entity services, those services could return certain HTTP error messages (for example, what if a song ID is not provided). Make sure your API returns those HTTP codes and messages when appropriate. The sample shows how to do this.

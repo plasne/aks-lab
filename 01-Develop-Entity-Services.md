@@ -215,3 +215,5 @@ To complete this activity, make sure your VSCODE development environment is conf
 ## Tips
 
 - When running locally, you will probably want the services running on different ports. When running in production, you will probably want the services all running on port 80. Environment Variables are a good way to do this.
+
+- When making changes to a variable that could be accessed concurrently (for example, multiple incoming HTTP requests), you should use one of the [mutex](https://gobyexample.com/mutexes) options. There is an example of using a RWMutex in the sample.

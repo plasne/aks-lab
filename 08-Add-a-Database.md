@@ -163,9 +163,9 @@ Having said that, there are legitimate cases to be made for both options.
 </details>
 &nbsp;
 
-### Bonus exercise
+## Build a new Dockerfile
 
-Ensure that an appropriate error and status code is returned to the user when calling the entity services is unsuccessful.
+If you used the "scratch" container image (as shown in the sample), then you will likely discover a problem connecting to MongoDB when you run in the container. If you are using an SSL encrypted connection, you need root and intermediate certificates to verify the SSL certificate is properly signed - those certificates do not exist in the scratch container image so they must be added. This is shown in the sample [v2 Dockerfile](./sample/songs/v2/Dockerfile) if you need help.
 
 ## Test your solution
 
