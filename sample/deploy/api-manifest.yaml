@@ -5,7 +5,7 @@ metadata:
   labels:
     app: api
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: api
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: pelasneakslabacr.azurecr.io/api:1.3.0
+        image: akslabhv.azurecr.io/api:1.2.0 # adjust for your ACR/image/tag
         ports:
         - containerPort: 80
 ---

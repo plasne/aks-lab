@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: songs
-        image: pelasneakslabacr.azurecr.io/songs:1.0.0
+        image: akslabhv.azurecr.io/songs:1.0.0 # adjust for your ACR/image/tag
         ports:
         - containerPort: 80
 ---
@@ -40,14 +40,14 @@ spec:
     spec:
       containers:
       - name: songs
-        image: pelasneakslabacr.azurecr.io/songs:2.1.0
+        image: akslabhv.azurecr.io/songs:2.0.0 # adjust for your ACR/image/tag
         ports:
         - containerPort: 80
         env:
           - name: MONGO_CONNSTRING
             valueFrom:
               secretKeyRef:
-                name: plasne-secrets
+                name: akslabhv-secret
                 key: MONGO_CONNSTRING
 ---
 apiVersion: v1

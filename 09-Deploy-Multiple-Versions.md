@@ -15,8 +15,26 @@ For this exercise, you will...
 1. Write a new manifest for the new deployment strategy. This should probably include 2 versions of the songs service (v1 and v2), a Service, a VirtualService, and a DestinationRule.
 
     There are a number of ways to route traffic to a specific version, you could use different host names, paths, querystring parameters, or headers.
-    
+
     For the sample ([sample/deploy/songs-versions-manifest.yaml](sample/deploy/songs-versions-manifest.yaml)), I chose to use a header called "x-api-version" which should either be "v1" or "v2". If a value outside of that range is specified, an HTTP 400 Bad Request is returned. If the header is not specified it goes to v1 - this maintains compatibility with the prior implementation. Note that the sample manifest is meant to replace the songs-manifest.yaml, so you will probably need to revoke that previous manifest if deployed.
+
+    Note that a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) will need to be created for the MONGO_CONNSTRING variable that is expected in v2 of the songs service, and included in the respective deployment manifest. You can create it by applying a Secret configuration:
+
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: akslabhv-secret
+    type: Opaque
+    data:
+      MONGO_CONNSTRING: <Base64 value of your mongodb connection string>
+    ```
+
+    or using the following command:
+
+    ```bash
+    kubectl create secret generic akslabhv-secret --type=string --from-literal=MONGO_CONNSTRING=<your mongodb connection string>
+    ```
 
 2. Modify your API to route to the appropriate songs service based on the client specifying the intended version.
 

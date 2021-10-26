@@ -127,7 +127,7 @@ GW_SUBNET_ID=$(az network vnet subnet show --resource-group $RESOURCE_GROUP --vn
 az network application-gateway create -g $RESOURCE_GROUP -n $APP_GATEWAY --sku $APP_GATEWAY_SKU --subnet $GW_SUBNET_ID --servers $ISTIO_GATEWAY_INTERNALIP --public-ip-address $PUBLIC_IP_ADDRESS
 
 # Create a custom health probe
-az network application-gateway probe create -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY -n $GW_HEALTHPROBE_NAME --protocol http --threshold 3 --timeout 30 --host $PUBLIC_IP_ADDRESS --path /health
+az network application-gateway probe create -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY -n $GW_HEALTHPROBE_NAME --protocol http --threshold 3 --timeout 30 --host $ISTIO_GATEWAY_INTERNALIP --path /health
 
 # Get app gateway backend HTTP settings
 HTTP_SETTINGS=$(az network application-gateway http-settings list -g $RESOURCE_GROUP --gateway-name $APP_GATEWAY --query [0].name -o tsv)
