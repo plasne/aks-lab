@@ -23,3 +23,8 @@ Third, deploy the Azure infrastructure to run your application...
 - [05: Deploy Azure Resources](./05-Deploy-Azure-Resources.md)
 - [06: Deploy Application](./06-Deploy-Application.md)
 - [07: Configure Ingress](./07-Configure-Ingress.md)
+
+Last, add a database for your service and deploy a second version...
+
+- [08: Add a Database](./08-Add-a-Database.md)
+- [09: Deploy Multiple Versions](./09-Deploy-Multiple-Versions.md)
